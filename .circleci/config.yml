@@ -247,7 +247,7 @@ jobs:
             then
               curl https://kvdb.io/L6tSP5XWudMksHSKUU8udc/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
-      - destroy_environment
+      - destroy-environment
       - revert-migrations
 
   deploy-frontend:
@@ -287,7 +287,7 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
-      - destroy_environment
+      - destroy-environment
       - revert-migrations
 
   deploy-backend:
@@ -330,6 +330,7 @@ jobs:
             cd .circleci/ansible
             cat .inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
+
       - destroy-environment
       - revert-migrations
 
