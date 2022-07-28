@@ -163,7 +163,7 @@ jobs:
             npm audit fix --force
             npm audit --audit-level=critical
 
-   deploy-infrastructure:
+  deploy-infrastructure:
     docker:
       - image: cimg/base:stable
     steps:
@@ -287,7 +287,6 @@ jobs:
 
       - destroy-environment
       - revert-migrations
-
   deploy-backend:
     docker:
       - image: cimg/base:stable
