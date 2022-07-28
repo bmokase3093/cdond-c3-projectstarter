@@ -287,28 +287,28 @@ jobs:
 
       - destroy-environment
       - revert-migrations
+
   deploy-backend:
     docker:
       - image: cimg/base:stable
     steps:
       - checkout
       - install_awscli
-      - install_nodejs
       - install_ansible
+      - install_nodejs
       - add_ssh_keys:
           fingerprints: ["b6:50:76:a2:7f:cf:0c:7a:5d:5e:2a:7d:96:c9:69:3b"]
       - attach_workspace:
-          at: ~/
+          at: ~/ 
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-deps]
       - run:
           name: Install dependencies
           command: |
             cd backend
             npm install
-
       - run:
-          name: Backend package
+          name: Package Backend
           command:
             cd backend
             npm run build
@@ -316,18 +316,15 @@ jobs:
 
             cd .. 
             cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files 
-
       - run:
           name: Deploy backend
           command: |
             export TYPEORM_MIGRATIONS_DIR=./migrations
             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
             export TYPEORM_MIGRATIONS=./migrations/*.ts
-            
             cd .circleci/ansible
             cat .inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-
       - destroy-environment
       - revert-migrations
 
