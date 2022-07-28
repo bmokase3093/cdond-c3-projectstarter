@@ -253,38 +253,30 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
+      - install_awscli
       - install_nodejs
-      - run:
-          name: Install tar and gzip
-          command: |
-            yum install -y tar gzip
-      - attach_workspace:
-          at: ~/
-
       - run:
           name: Install dependencies
           command: |
             cd frontend
             npm install
-
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
-            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WOKFLOW_ID:0:7}" \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text)
+            echo "API_URL=http://${BACKEND_Public_IP}:3030" >> frontend/.env
             cat frontend/.env
-            
       - run:
           name: Deploy frontend objects
           command: |
             cd frontend
-            npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-
+            aws s3 cp dist s3://udapeople-${CIRCLE_WOKFLOW_ID:0:7} --recursive
+      
       - destroy-environment
       - revert-migrations
 
