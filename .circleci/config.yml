@@ -52,7 +52,7 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      - slack-notify
+      
 
   build-backend:
     docker:
@@ -70,7 +70,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      - slack-notify
+      
 
   test-frontend:
     docker:
@@ -85,7 +85,7 @@ jobs:
             cd frontend
             npm i 
             npm run test
-      - slack-notify
+      
 
   test-backend:
     docker:
@@ -100,7 +100,7 @@ jobs:
             cd backend
             npm i 
             npm run test
-      - slack-notify
+      
 
   scan-frontend:
     docker:
@@ -115,7 +115,7 @@ jobs:
             cd frontend
             npm i 
             npm audit fix --audit-level=critical --force
-      - slack-notify
+      
 
   scan-backend:
     docker:
@@ -130,7 +130,7 @@ jobs:
             cd backend
             npm i 
             npm audit fix --audit-level=critical --force
-      - slack-notify
+      
 
   deploy-infrastructure:
     docker:
@@ -258,7 +258,6 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      - slack-notify
       - destroy_environment
       - revert-migrations
 
