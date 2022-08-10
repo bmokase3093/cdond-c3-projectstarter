@@ -164,10 +164,10 @@ jobs:
             echo $BACKEND_IP >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: ~/project
+          root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
-      - destroy_environment
+            - project/.circleci/ansible/inventory.txt
+      - destroy-environment
 
   configure-infrastructure:
     docker:
