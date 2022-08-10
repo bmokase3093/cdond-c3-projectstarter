@@ -28,7 +28,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure  https://kvdb.io/BtyGwTRQwxKEHw8w8deLz3/migration_<< parameters.workflow_id >>)
+            SUCCESS=$(curl --insecure  https://kvdb.io/L6tSP5XWudMksHSKUU8udc/migration_<< parameters.workflow_id >>)
             if (( $SUCCESS == 1 ));
             then
                 cd ~/project/backend
@@ -169,6 +169,30 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       - destroy_environment
 
+
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.16
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["b6:50:76:a2:7f:cf:0c:7a:5d:5e:2a:7d:96:c9:69:3b"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible tar gzip npm
+            ansible --version
+            pip install awscli
+            aws --version
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
+      - destroy_environment
+
 workflows:
   default:
     jobs:
@@ -187,6 +211,8 @@ workflows:
           filters:
             branches:
               only: [master]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
 
   
       
