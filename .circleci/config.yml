@@ -16,7 +16,7 @@ commands:
             aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
             aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >>
   
-  rollback_migration:
+  revert_migrations:
     description: Rollback the last migration if successfully run in the current workflow.
     parameters:
       Workflow_ID:
@@ -214,6 +214,7 @@ jobs:
           command: |
             cd backend
             npm install
+            npm run build
             npm run migrations > ~/project/backend/migrations_dump.txt
             cat ~/project/backend/migrations_dump.txt
       - run:
@@ -221,7 +222,9 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-              curl https://kvdb.io/aR5F6TE9exoUDYe1HhhgV/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+              curl https://kvdb.io/XGyzjYjULFzbKGUTqSu1Ef/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+            else
+              echo "No migrations happened"
             fi
       - destroy_environment
       - revert_migrations
