@@ -130,8 +130,6 @@ jobs:
             cd backend
             npm install
             npm audit fix --audit-level=critical --force
-            npm audit fix --audit-level=critical --force
-            npm audit --audit-level=critical
 
 
   deploy-infrastructure:
@@ -227,7 +225,7 @@ jobs:
               echo "No migrations happened"
             fi
       - destroy_environment
-      - revert-migrations
+      - revert_migrations
 
 workflows:
   default:
