@@ -227,7 +227,7 @@ jobs:
               echo "No migrations happened"
             fi
       - destroy_environment
-      - revert_migrations
+      - revert-migrations
 
 workflows:
   default:
