@@ -1,20 +1,32 @@
 ---
-- name: 'upgrade packages.'
-  become: true
-  apt:
-    upgrade: 'yes'
+- name: "Creates backend app directory"
+  file:
+    path: ~/backend-app
+    state: directory
 
-- name: 'install dependencies.'
-  become: true
-  apt:
-    name: ['nodejs', 'npm']
-    state: latest
-    update_cache: yes
+- name: "Unarchive backend files"
+  unarchive:
+    src: artifact.tar.gz
+    dest: ~/backend-app
 
-- name: 'install pm2'
+- name: "Installing Node Dependencies"
+  shell: |
+    cd ~/backend-app
+    npm i
+    
+- name: "Executing Node app with pm2"
+  shell: |
+    cd ~/backend-app/dist
+    pm2 stop default
+    pm2 start main.js
+
+  register: execute_node
+
+- name: print message
+  debug:
+    msg: "{{ execute_node.stdout_lines }}"
+
+- name: "Configure pm2 to start as service"
   become: true
-  npm:
-    name: pm2
-    global: yes
-    production: yes
-    state: present
+  shell: |
+    env PATH=$PATH:/usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
