@@ -405,6 +405,8 @@ jobs:
       - checkout
       - install_awscli
       - install_nodejs
+      - attach_workspace:
+          at: ~/
       - run:
           name: Get old stack workflow id and Remove old stacks and files
           command: |
@@ -426,6 +428,7 @@ jobs:
             else
               echo "--------------------Cannot Cleanup------------------"
             fi
+      
       
 
 workflows:
